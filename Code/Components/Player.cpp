@@ -136,14 +136,42 @@ void Player::updateGrabbedObject(float delta)
 		return;
 
 	Vec3 origin = m_camera->GetWorldTransformMatrix().GetTranslation();
-	m_grabbedObject->SetPos(origin + m_cameraViewDir * GRAB_OBJECT_DIST);
+	Vec3 newPos = origin + m_cameraViewDir * GRAB_OBJECT_DIST;
 
-	AABB box;
-	m_grabbedObject->GetWorldBounds(box);
+	IPhysicalEntity* physEnt = m_grabbedObject->GetPhysics();
+
+	/*pe_params_pos positionParams;
+	physEnt->GetParams(&positionParams);
+	positionParams.q = IDENTITY;
+
+	physEnt->SetParams(&positionParams);*/
+
+	AABB aabb;
+	m_grabbedObject->GetWorldBounds(aabb);
+	
+	pe_status_pos spos;
+	m_grabbedObject->GetPhysics()->GetStatus(&spos);
+	spos.pGeom;
+	physEnt->GetStatus(&spos);
+
+	IGeometry *geom = spos.pGeom;
+
+	primitives::box box;
+	geom->GetBBox(&box);
+	CryLogAlways("ORIENTTED %d", box.bOriented);
 
 	IPersistantDebug* db = gEnv->pGameFramework->GetIPersistantDebug();
 	db->Begin("AABB", true);
-	db->AddAABB(box.min, box.max, ColorF(1, 0, 0), 1.0);
+	db->AddAABB(aabb.min, aabb.max, ColorF(1, 0, 0), 1.0);
+
+	db->AddSphere(spos.pos + spos.BBox[0], 0.1f, ColorF(1, 1, 0), 1.0);
+	db->AddSphere(spos.pos + spos.BBox[1], 0.1f, ColorF(1, 1, 0), 1.0);
+	db->AddQuat(spos.pos, spos.q, 1.f, ColorF(1, 1, 0), 1.0);
+
+	db->AddSphere(newPos + box.size, 0.1f, ColorF(1, 0, 1), 1.0);
+	db->AddSphere(newPos - box.size, 0.1f, ColorF(1, 0, 1), 1.0);
+
+	m_grabbedObject->SetPos(newPos);
 }
 
 void Player::doPerspectiveScaling(IEntity* entity) {
@@ -173,7 +201,7 @@ void Player::doPerspectiveScaling(IEntity* entity) {
 
 	for (size_t i = 0; i < points.size(); i++) {
 		Vec3 dir = (points[i] - origin).normalize() * maxDist;
-		rayCastFromCamera(hit, dir, ent_all);
+		rayCastFromCamera(hit, dir, ent_static);
 
 		if (hit.pCollider && hit.dist < minDist) {
 			minDist = hit.dist;
@@ -245,12 +273,29 @@ void Player::pickObject() {
 			IEntity* entity = gEnv->pEntitySystem->GetEntityFromPhysics(hit.pCollider);
 
 			m_grabbedObject = entity;
+
+			/*IPhysicalEntity* physEnt = m_grabbedObject->GetPhysics();
+			pe_params_pos positionParams;
+			physEnt->GetParams(&positionParams);
+			positionParams.iSimClass = SC_SLEEPING_RIGID;
+			physEnt->SetParams(&positionParams);*/
+
+			/*pe_simulation_params simulationParameters;
+			if (physicalEntity.GetParams(&simulationParameters))
+			{
+			}
+			->SetParams();*/
 			m_grabbedObject->EnablePhysics(false);
 		}
 	}
 	else {
-		//m_grabbedObject->EnablePhysics(true);
+		m_grabbedObject->EnablePhysics(true);
 		doPerspectiveScaling(m_grabbedObject);
+
+		IPhysicalEntity* physEnt = m_grabbedObject->GetPhysics();
+		pe_action_reset action;
+		physEnt->Action(&action);
+
 		m_grabbedObject = nullptr;
 	}
 }
