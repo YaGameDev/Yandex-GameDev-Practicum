@@ -17,6 +17,7 @@ class Player final : public IEntityComponent
 	Cry::DefaultComponents::CCameraComponent* m_camera = nullptr;
 
 	Matrix34 m_bodyOrientation = IDENTITY;
+	Vec3 m_cameraViewDir = FORWARD_DIRECTION;
 
 	Vec2 m_mouseDelta = ZERO;
 	
@@ -44,7 +45,7 @@ class Player final : public IEntityComponent
 	void updateGrabbedObject(float delta);
 	void doPerspectiveScaling(IEntity* entity);
 	void pickObject();
-	IEntity* rayCastFromCamera(ray_hit& hit, float dist, int objTypes);
+	IEntity* rayCastFromCamera(ray_hit &hit, const Vec3 &dir, int objTypes);
 
 public:
 	Player() = default;

@@ -15,7 +15,6 @@
 
 #include <DefaultComponents/Physics/RigidBodyComponent.h>
 #include <DefaultComponents/Input/InputComponent.h>
-#include <DefaultComponents/Geometry/StaticMeshComponent.h>
 
 void Player::Initialize()
 {
@@ -122,10 +121,13 @@ void Player::updateCamera(float delta)
 	m_bodyOrientation = CCamera::CreateOrientationYPR(Ang3(ypr.x, 0, 0));
 
 	Matrix34 localTransform = m_character->GetTransformMatrix();
-	localTransform.SetRotation33(CCamera::CreateOrientationYPR(ypr));
+	camOrientation = CCamera::CreateOrientationYPR(ypr);
+	localTransform.SetRotation33(camOrientation);
 	localTransform.AddTranslation(Vec3(0, 0, cameraHeight));
 
 	m_camera->SetTransformMatrix(localTransform);
+
+	m_cameraViewDir = camOrientation * FORWARD_DIRECTION;
 }
 
 void Player::updateGrabbedObject(float delta)
@@ -133,44 +135,105 @@ void Player::updateGrabbedObject(float delta)
 	if (!m_grabbedObject)
 		return;
 
-	Matrix33 orientation;
-	m_camera->GetTransformMatrix().GetRotation33(orientation);
-
 	Vec3 origin = m_camera->GetWorldTransformMatrix().GetTranslation();
-	Vec3 dir = orientation * Vec3(0, 1, 0);
+	m_grabbedObject->SetPos(origin + m_cameraViewDir * GRAB_OBJECT_DIST);
 
-	//m_grabbedObject->SetWorldTM(Matrix34::CreateScale(Vec3(2, 2, 2), origin + dir * 2));
-	m_grabbedObject->SetPos(origin + dir * GRAB_OBJECT_DIST);
+	AABB box;
+	m_grabbedObject->GetWorldBounds(box);
+
+	IPersistantDebug* db = gEnv->pGameFramework->GetIPersistantDebug();
+	db->Begin("AABB", true);
+	db->AddAABB(box.min, box.max, ColorF(1, 0, 0), 1.0);
 }
 
 void Player::doPerspectiveScaling(IEntity* entity) {
-	const float radius = 0.5f;
 	const float maxDist = 20;
 
-	Matrix33 orientation;
-	m_camera->GetTransformMatrix().GetRotation33(orientation);
+	AABB box;
+	m_grabbedObject->GetWorldBounds(box);
+
+	std::vector<Vec3> points = { 
+		{box.min.x, box.min.y, box.min.z},
+		{box.max.x, box.min.y, box.min.z},
+		{box.max.x, box.max.y, box.min.z},
+		{box.min.x, box.max.y, box.min.z},
+
+		{box.min.x, box.min.y, box.max.z},
+		{box.max.x, box.min.y, box.max.z},
+		{box.max.x, box.max.y, box.max.z},
+		{box.min.x, box.max.y, box.max.z},
+	};
 
 	Vec3 origin = m_camera->GetWorldTransformMatrix().GetTranslation();
-	Vec3 dir = orientation * Vec3(0, 1, 0);
-
+	box.GetSize();
 	ray_hit hit;
-	rayCastFromCamera(hit, maxDist, ent_all);
 
-	if (!hit.pCollider)
+	float minDist = 2 * maxDist;
+	int minRay = -1;
+
+	for (int j = 0; j < 1000; j++) {
+		for (size_t i = 0; i < points.size(); i++) {
+			Vec3 dir = (points[i] - origin).normalize() * maxDist;
+			rayCastFromCamera(hit, dir, ent_all);
+
+			if (hit.pCollider && hit.dist < minDist) {
+				minDist = hit.dist;
+				minRay = i;
+			}
+		}
+	}
+	
+	if (minRay == -1)
 		return;
 
+	Vec3 old = points[minRay] - origin;
+	Vec3 dir = old.normalized();
+
+	float oldP = old.dot(m_cameraViewDir);
+	float newP = oldP * minDist / old.len();
+
 	float d1 = GRAB_OBJECT_DIST;
-	float f = hit.dist;
-	float d2 = f / (1 + radius / d1);
+	float f = newP;
+	float d2 = f / (1 + (oldP - d1) / d1);
 
 	float k = d2 / d1;
 
-	Vec3 newPos = origin + dir * d1 * k;
+	Vec3 newPos = origin + m_cameraViewDir * d1 * k;
+
+	{
+		IPersistantDebug* db = gEnv->pGameFramework->GetIPersistantDebug();
+		db->Begin("scale", false);
+		db->AddSphere(origin + m_cameraViewDir * oldP, 0.05f, ColorF(0, 0, 1), 4.0);
+		db->AddSphere(origin + m_cameraViewDir * newP, 0.05f, ColorF(1, 0, 1), 4.0);
+	}
 
 	entity->SetPos(newPos);
 	entity->SetScale(Vec3(k));
 
-	CryLogAlways("d1 = %f\nk = %f\nd2 = %f\nf = %f\nk * r - f = %f", d1, k, d2, f, k * radius - f);
+	//const float radius = 0.5f;
+
+	////ray_hit hit;
+	//rayCastFromCamera(hit, m_cameraViewDir * maxDist, ent_all);
+
+	//if (!hit.pCollider)
+	//	return;
+
+	//float d1 = GRAB_OBJECT_DIST;
+	//float f = hit.dist;
+	//float d2 = f / (1 + radius / d1);
+
+	//float k = d2 / d1;
+
+	////Vec3 origin = m_camera->GetWorldTransformMatrix().GetTranslation();
+	//const Vec3 &dir = m_cameraViewDir;
+
+	//Vec3 newPos = origin + dir * d1 * k;
+
+	//entity->SetPos(newPos);
+	//entity->SetScale(Vec3(k));
+	//entity->GetPhysics()->AddGeometry;
+
+	//CryLogAlways("d1 = %f\nk = %f\nd2 = %f\nf = %f\nk * r - f = %f", d1, k, d2, f, k * radius - f);
 }
 
 void Player::pickObject() {
@@ -178,17 +241,13 @@ void Player::pickObject() {
 
 	if (m_grabbedObject == nullptr) {
 		ray_hit hit;
-		rayCastFromCamera(hit, maxPickDist, ent_rigid | ent_sleeping_rigid);
+		rayCastFromCamera(hit, m_cameraViewDir * GRAB_OBJECT_DIST, ent_rigid | ent_sleeping_rigid);
 
 		if (hit.pCollider) {
 			IEntity* entity = gEnv->pEntitySystem->GetEntityFromPhysics(hit.pCollider);
 
-			Cry::DefaultComponents::CStaticMeshComponent* mesh = entity->GetComponent<Cry::DefaultComponents::CStaticMeshComponent>();
-
-			if (mesh) {
-				m_grabbedObject = entity;
-				m_grabbedObject->EnablePhysics(false);
-			}
+			m_grabbedObject = entity;
+			m_grabbedObject->EnablePhysics(false);
 		}
 	}
 	else {
@@ -198,16 +257,11 @@ void Player::pickObject() {
 	}
 }
 
-IEntity* Player::rayCastFromCamera(ray_hit &hit, float dist, int objTypes) {
-	Matrix33 orientation;
-	m_camera->GetTransformMatrix().GetRotation33(orientation);
-
+IEntity* Player::rayCastFromCamera(ray_hit &hit, const Vec3 &dir, int objTypes) {
 	Vec3 origin = m_camera->GetWorldTransformMatrix().GetTranslation();
-	Vec3 dir = orientation * Vec3(0, dist, 0);
 
-	CryLogAlways("from %f %f %f", origin.x, origin.y, origin.z);
-	CryLogAlways("dir %f %f %f", dir.x, dir.y, dir.z);
-
+	//CryLogAlways("from %f %f %f", origin.x, origin.y, origin.z);
+	//CryLogAlways("dir %f %f %f", dir.x, dir.y, dir.z);
 	
 	const unsigned int flags = rwi_stop_at_pierceable | rwi_colltype_any;
 
@@ -215,13 +269,14 @@ IEntity* Player::rayCastFromCamera(ray_hit &hit, float dist, int objTypes) {
 
 	gEnv->pPhysicalWorld->RayWorldIntersection(origin, dir, objTypes, flags, &hit, 1, skip);
 
+
 	if (hit.pCollider) {
-		CryLogAlways("Found something");
-		IPersistantDebug* db = gEnv->pGameFramework->GetIPersistantDebug();
+		/*IPersistantDebug* db = gEnv->pGameFramework->GetIPersistantDebug();
 		if (hit.pCollider) {
 			db->Begin("RC hit", false);
-			db->AddSphere(hit.pt, 0.05f, ColorF(1, 0, 0), 2.0);
-		}
+			db->AddSphere(hit.pt, 0.05f, ColorF(0, 0, 1), 4.0);
+		}*/
+
 		IPhysicalEntity* physEnt = hit.pCollider;
 		IEntity* entity = gEnv->pEntitySystem->GetEntityFromPhysics(physEnt);
 		return entity;

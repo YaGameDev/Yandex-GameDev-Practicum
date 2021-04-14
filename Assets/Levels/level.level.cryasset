@@ -1,4 +1,4 @@
-<AssetMetadata version="0" type="Level" guid="68779bd1-74c8-2c80-1c0e-3a60bc1a9723" source="" timestamp="1618151773">
+<AssetMetadata version="0" type="Level" guid="68779bd1-74c8-2c80-1c0e-3a60bc1a9723" source="" timestamp="1618341726">
  <Files>
   <File path="level/level.level"/>
  </Files>
@@ -24,6 +24,5 @@
   <Path>%engine%/engineassets/textures/grey.dds</Path>
   <Path>%engine%/engineassets/textures/skys/night/half_moon.dds</Path>
   <Path usageCount="1">Libs/environmentpresets/test.env</Path>
-  <Path>scripts/ai/factions.xml</Path>
  </Dependencies>
 </AssetMetadata>
