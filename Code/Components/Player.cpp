@@ -171,15 +171,13 @@ void Player::doPerspectiveScaling(IEntity* entity) {
 	float minDist = 2 * maxDist;
 	int minRay = -1;
 
-	for (int j = 0; j < 1000; j++) {
-		for (size_t i = 0; i < points.size(); i++) {
-			Vec3 dir = (points[i] - origin).normalize() * maxDist;
-			rayCastFromCamera(hit, dir, ent_all);
+	for (size_t i = 0; i < points.size(); i++) {
+		Vec3 dir = (points[i] - origin).normalize() * maxDist;
+		rayCastFromCamera(hit, dir, ent_all);
 
-			if (hit.pCollider && hit.dist < minDist) {
-				minDist = hit.dist;
-				minRay = i;
-			}
+		if (hit.pCollider && hit.dist < minDist) {
+			minDist = hit.dist;
+			minRay = i;
 		}
 	}
 	
