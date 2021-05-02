@@ -1,0 +1,14 @@
+<AssetMetadata version="0" type="Mesh" guid="0265cc8c-4191-1201-538e-d4dde2d70a8b" source="cat.fbx">
+ <Files>
+  <File path="cat.cgf"/>
+ </Files>
+ <Details>
+  <Detail name="materialCount">2</Detail>
+  <Detail name="triangleCount">2082</Detail>
+  <Detail name="vertexCount">6246</Detail>
+  <Detail name="16BitPrecision">false</Detail>
+ </Details>
+ <Dependencies>
+  <Path usageCount="1">%ENGINE%/EngineAssets/Materials/material_default.mtl</Path>
+ </Dependencies>
+</AssetMetadata>

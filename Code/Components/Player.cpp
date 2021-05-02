@@ -18,12 +18,14 @@
 
 void Player::Initialize()
 {
+	const float character_Y = 1.2f;
+
 	m_character = m_pEntity->GetOrCreateComponent<Cry::DefaultComponents::CCharacterControllerComponent>();
 	m_camera = m_pEntity->GetOrCreateComponent<Cry::DefaultComponents::CCameraComponent>();
 	m_input = m_pEntity->GetOrCreateComponent<Cry::DefaultComponents::CInputComponent>();
 
 
-	m_character->SetTransformMatrix(Matrix34::Create(Vec3(1.f), IDENTITY, Vec3(0, 0, 1.f)));
+	m_character->SetTransformMatrix(Matrix34::Create(Vec3(1.f), IDENTITY, Vec3(0, 0, character_Y)));
 
 	m_input->RegisterAction("player", "moveleft", [this](int activationMode, float value) { HandleInputFlagChange(EInputFlag::MoveLeft, (EActionActivationMode)activationMode);  });
 	m_input->BindAction("player", "moveleft", eAID_KeyboardMouse, EKeyId::eKI_A);
@@ -47,8 +49,20 @@ void Player::Initialize()
 		if (activationMode == eAAM_OnPress)
 			pickObject();
 	});
-
 	m_input->BindAction("player", "shoot", eAID_KeyboardMouse, EKeyId::eKI_Mouse1);
+
+
+	m_input->RegisterAction("player", "exit", [this](int activationMode, float value) {
+		if (activationMode == eAAM_OnPress)
+			gEnv->pConsole->ExecuteString("quit");
+	});
+	m_input->BindAction("player", "exit", eAID_KeyboardMouse, EKeyId::eKI_Escape);
+
+	m_input->RegisterAction("player", "toggle_debug", [this](int activationMode, float value) {
+		if (activationMode == eAAM_OnPress)
+			m_debug ^= 1;
+	});
+	m_input->BindAction("player", "toggle_debug", eAID_KeyboardMouse, EKeyId::eKI_Tab);
 }
 
 Cry::Entity::EventFlags Player::GetEventMask() const
@@ -79,7 +93,7 @@ void Player::updateMovement(float delta)
 		return;
 
 	Vec3 velocity = ZERO;
-	const float moveSpeed = 40.0f;
+	const float moveSpeed = 50.0f;
 
 	if (m_inputFlags & EInputFlag::MoveLeft)
 		velocity.x -= 1.f;
@@ -130,6 +144,73 @@ void Player::updateCamera(float delta)
 	m_cameraViewDir = camOrientation * FORWARD_DIRECTION;
 }
 
+void Player::lockLocalPoints() {
+	IPhysicalEntity* physEnt = m_grabbedObject->GetPhysics();
+
+	pe_status_pos spos;
+	m_grabbedObject->GetPhysics()->GetStatus(&spos);
+	physEnt->GetStatus(&spos);
+
+	std::vector<Vec3>& points = m_grabbedObjectPoints;
+	IGeometry* geom = spos.pGeom;
+
+	if (geom->GetType() == GEOM_TRIMESH) {
+		points.clear();
+
+		const mesh_data* mesh = (mesh_data*) geom->GetData();
+
+		for (int i = 0; i < mesh->nVertices; i++) {
+			points.push_back(mesh->pVertices[i]);
+		}
+	}
+	
+	else {
+		const int SAMPLES = 4;
+
+		points.clear();
+		points.reserve(8 + SAMPLES * SAMPLES * 6);
+
+		primitives::box box;
+		geom->GetBBox(&box);
+
+		//CryLogAlways("BOX POSITION %f %f %f", box.center.x, box.center.y, box.center.z);
+
+		for (int i = 0; i < 8; i++) {
+			float sx = (float)((i & 1) * 2 - 1);
+			float sy = (float)((i >> 1 & 1) * 2 - 1);
+			float sz = (float)((i >> 2 & 1) * 2 - 1);
+
+			//CryLogAlways("i = %d %d %d %d", i, sx, sy, sz);
+			points.push_back(Vec3(sx, sy, sz).CompMul(box.size));
+		}
+
+		std::vector<std::array<Vec3, 3>> faces = {
+			{points[0], points[1], points[2]},
+			{points[0], points[1], points[4]},
+			{points[0], points[2], points[4]},
+
+			{points[1], points[3], points[5]},
+			{points[2], points[3], points[6]},
+			{points[4], points[5], points[6]},
+		};
+
+
+		for (const auto& face : faces) {
+			Vec3 diff_i = (face[1] - face[0]);
+			Vec3 diff_j = (face[2] - face[0]);
+
+			for (int i = 1; i < SAMPLES + 1; i++) {
+				for (int j = 1; j < SAMPLES + 1; j++) {
+					float fi = i / (float)(SAMPLES + 1);
+					float fj = j / (float)(SAMPLES + 1);
+
+					points.push_back(face[0] + diff_i * fi + diff_j * fj);
+				}
+			}
+		}
+	}
+}
+
 void Player::updateGrabbedObject(float delta)
 {
 	if (!m_grabbedObject)
@@ -138,85 +219,63 @@ void Player::updateGrabbedObject(float delta)
 	Vec3 origin = m_camera->GetWorldTransformMatrix().GetTranslation();
 	Vec3 newPos = origin + m_cameraViewDir * GRAB_OBJECT_DIST;
 
-	IPhysicalEntity* physEnt = m_grabbedObject->GetPhysics();
-
-	/*pe_params_pos positionParams;
-	physEnt->GetParams(&positionParams);
-	positionParams.q = IDENTITY;
-
-	physEnt->SetParams(&positionParams);*/
-
-	AABB aabb;
-	m_grabbedObject->GetWorldBounds(aabb);
-	
-	pe_status_pos spos;
-	m_grabbedObject->GetPhysics()->GetStatus(&spos);
-	spos.pGeom;
-	physEnt->GetStatus(&spos);
-
-	IGeometry *geom = spos.pGeom;
-
-	primitives::box box;
-	geom->GetBBox(&box);
-	CryLogAlways("ORIENTTED %d", box.bOriented);
-
-	IPersistantDebug* db = gEnv->pGameFramework->GetIPersistantDebug();
-	db->Begin("AABB", true);
-	db->AddAABB(aabb.min, aabb.max, ColorF(1, 0, 0), 1.0);
-
-	db->AddSphere(spos.pos + spos.BBox[0], 0.1f, ColorF(1, 1, 0), 1.0);
-	db->AddSphere(spos.pos + spos.BBox[1], 0.1f, ColorF(1, 1, 0), 1.0);
-	db->AddQuat(spos.pos, spos.q, 1.f, ColorF(1, 1, 0), 1.0);
-
-	db->AddSphere(newPos + box.size, 0.1f, ColorF(1, 0, 1), 1.0);
-	db->AddSphere(newPos - box.size, 0.1f, ColorF(1, 0, 1), 1.0);
-
 	m_grabbedObject->SetPos(newPos);
+
+	if (m_debug) {
+		IPersistantDebug* db = gEnv->pGameFramework->GetIPersistantDebug();
+		db->Begin("obb", true);
+		for (const Vec3& point : m_grabbedObjectPoints) {
+			db->AddSphere(m_grabbedObject->GetWorldTM() * point, 0.01f, ColorF(1, 0, 1), 1.0);
+		}
+	}
 }
 
-void Player::doPerspectiveScaling(IEntity* entity) {
-	const float maxDist = 20;
+void Player::doPerspectiveScaling() {
+	const float maxDist = 30;
+	const float wallMargin = 0.05f;
 
-	AABB box;
-	m_grabbedObject->GetWorldBounds(box);
-
-	std::vector<Vec3> points = { 
-		{box.min.x, box.min.y, box.min.z},
-		{box.max.x, box.min.y, box.min.z},
-		{box.max.x, box.max.y, box.min.z},
-		{box.min.x, box.max.y, box.min.z},
-
-		{box.min.x, box.min.y, box.max.z},
-		{box.max.x, box.min.y, box.max.z},
-		{box.max.x, box.max.y, box.max.z},
-		{box.min.x, box.max.y, box.max.z},
-	};
+	std::vector<Vec3> points = m_grabbedObjectPoints;
+	for (auto& point : points) {
+		point = m_grabbedObject->GetWorldTM() * point;
+	}
 
 	Vec3 origin = m_camera->GetWorldTransformMatrix().GetTranslation();
-	box.GetSize();
 	ray_hit hit;
 
 	float minDist = 2 * maxDist;
 	int minRay = -1;
 
 	for (size_t i = 0; i < points.size(); i++) {
-		Vec3 dir = (points[i] - origin).normalize() * maxDist;
-		rayCastFromCamera(hit, dir, ent_static);
+		Vec3 dir = points[i] - origin;
+		float ln = dir.len();
+		dir = dir / ln * maxDist;
 
-		if (hit.pCollider && hit.dist < minDist) {
-			minDist = hit.dist;
-			minRay = i;
+		//if (ln > GRAB_OBJECT_DIST) 
+		{
+			rayCastFromCamera(hit, dir, ent_all);
+
+			float hit_dist = std::max(hit.dist - wallMargin, 0.f);
+
+			if (hit.pCollider && (hit_dist - ln) < minDist) {
+				minDist = hit_dist - ln;
+				minRay = i;
+			}
 		}
 	}
 	
-	if (minRay == -1)
+	if (minRay == -1) {
+		Vec3 newPos = origin + m_cameraViewDir * (GRAB_OBJECT_DIST + wallMargin);
+
+		m_grabbedObject->SetPos(newPos);
 		return;
+	}
 
 	Vec3 old = points[minRay] - origin;
-	Vec3 dir = old.normalized();
+	float old_ln = old.len();
+	Vec3 dir = old / old_ln;
 
 	float oldP = old.dot(m_cameraViewDir);
-	float newP = oldP * minDist / old.len();
+	float newP = oldP * (minDist + old_ln) / old_ln;
 
 	float d1 = GRAB_OBJECT_DIST;
 	float f = newP;
@@ -226,15 +285,17 @@ void Player::doPerspectiveScaling(IEntity* entity) {
 
 	Vec3 newPos = origin + m_cameraViewDir * d1 * k;
 
+	if (false)
 	{
 		IPersistantDebug* db = gEnv->pGameFramework->GetIPersistantDebug();
 		db->Begin("scale", false);
-		db->AddSphere(origin + m_cameraViewDir * oldP, 0.05f, ColorF(0, 0, 1), 4.0);
-		db->AddSphere(origin + m_cameraViewDir * newP, 0.05f, ColorF(1, 0, 1), 4.0);
+		db->AddSphere(origin + m_cameraViewDir * oldP, 0.05f, ColorF(0, 0, 1), 40.0);
+		db->AddSphere(origin + m_cameraViewDir * newP, 0.05f, ColorF(1, 0, 1), 40.0);
+		db->AddSphere(points[minRay], 0.05f, ColorF(1, 1, 1), 40.0);
 	}
 
-	entity->SetPos(newPos);
-	entity->SetScale(Vec3(k));
+	m_grabbedObject->SetPos(newPos);
+	m_grabbedObject->SetScale(Vec3(k).CompMul(m_grabbedObject->GetScale()));
 
 	//const float radius = 0.5f;
 
@@ -274,27 +335,21 @@ void Player::pickObject() {
 
 			m_grabbedObject = entity;
 
-			/*IPhysicalEntity* physEnt = m_grabbedObject->GetPhysics();
-			pe_params_pos positionParams;
-			physEnt->GetParams(&positionParams);
-			positionParams.iSimClass = SC_SLEEPING_RIGID;
-			physEnt->SetParams(&positionParams);*/
-
-			/*pe_simulation_params simulationParameters;
-			if (physicalEntity.GetParams(&simulationParameters))
-			{
-			}
-			->SetParams();*/
+		
 			m_grabbedObject->EnablePhysics(false);
+			lockLocalPoints();
 		}
 	}
 	else {
 		m_grabbedObject->EnablePhysics(true);
-		doPerspectiveScaling(m_grabbedObject);
 
 		IPhysicalEntity* physEnt = m_grabbedObject->GetPhysics();
-		pe_action_reset action;
-		physEnt->Action(&action);
+		pe_action_reset reset = pe_action_reset();
+		physEnt->Action(&reset);
+		pe_action_awake awake = pe_action_awake();
+		physEnt->Action(&awake);
+
+		doPerspectiveScaling();
 
 		m_grabbedObject = nullptr;
 	}
@@ -302,9 +357,6 @@ void Player::pickObject() {
 
 IEntity* Player::rayCastFromCamera(ray_hit &hit, const Vec3 &dir, int objTypes) {
 	Vec3 origin = m_camera->GetWorldTransformMatrix().GetTranslation();
-
-	//CryLogAlways("from %f %f %f", origin.x, origin.y, origin.z);
-	//CryLogAlways("dir %f %f %f", dir.x, dir.y, dir.z);
 	
 	const unsigned int flags = rwi_stop_at_pierceable | rwi_colltype_any;
 
@@ -314,11 +366,11 @@ IEntity* Player::rayCastFromCamera(ray_hit &hit, const Vec3 &dir, int objTypes) 
 
 
 	if (hit.pCollider) {
-		/*IPersistantDebug* db = gEnv->pGameFramework->GetIPersistantDebug();
-		if (hit.pCollider) {
+		if (m_debug) {
+			IPersistantDebug* db = gEnv->pGameFramework->GetIPersistantDebug();
 			db->Begin("RC hit", false);
 			db->AddSphere(hit.pt, 0.05f, ColorF(0, 0, 1), 4.0);
-		}*/
+		}
 
 		IPhysicalEntity* physEnt = hit.pCollider;
 		IEntity* entity = gEnv->pEntitySystem->GetEntityFromPhysics(physEnt);

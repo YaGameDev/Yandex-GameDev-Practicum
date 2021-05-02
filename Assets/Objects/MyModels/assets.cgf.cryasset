@@ -1,0 +1,14 @@
+<AssetMetadata version="0" type="Mesh" guid="40090daa-d6b0-df07-b508-df6fcd160bff" source="Rock_5.fbx">
+ <Files>
+  <File path="assets.cgf"/>
+ </Files>
+ <Details>
+  <Detail name="materialCount">3</Detail>
+  <Detail name="triangleCount">778</Detail>
+  <Detail name="vertexCount">459</Detail>
+  <Detail name="16BitPrecision">false</Detail>
+ </Details>
+ <Dependencies>
+  <Path usageCount="1">%ENGINE%/EngineAssets/Materials/material_default.mtl</Path>
+ </Dependencies>
+</AssetMetadata>

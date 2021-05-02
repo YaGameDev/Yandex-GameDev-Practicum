@@ -1,0 +1,7 @@
+[ShaderList_PC.txt]<2>Water@WaterVS(%SUN_SHINE|%FOAM)(%_RT_SAMPLE3|%_RT_QUALITY|%_RT_NO_TESSELLATION|%_RT_REVERSE_DEPTH|%_RT_SAMPLE4)(0)(0)(0)(0)(VS)
+[ShaderList_PC.txt]<2>Total_Illumination@RenderLightingCommonVS()()(0)(0)(0)(0)(VS)
+[ShaderList_PC.txt]<2>DeferredShading@TiledDeferredShadingCS()(%_RT_DECAL_TEXGEN_2D|%_RT_SAMPLE1|%_RT_SAMPLE0|%_RT_SAMPLE4)(0)(0)(0)(0)(CS)
+[ShaderList_PC.txt]<2>Total_Illumination@UpScalePS()(%_RT_SAMPLE4)(0)(0)(0)(0)(PS)
+[ShaderList_PC.txt]<2>Total_Illumination@DemosaicPS()(%_RT_VOLUMETRIC_FOG|%_RT_TILED_SHADING|%_RT_NO_TESSELLATION|%_RT_SAMPLE4)(0)(0)(0)(0)(PS)
+[ShaderList_PC.txt]<2>Total_Illumination@ConeTracePS()(%_RT_VOLUMETRIC_FOG|%_RT_TILED_SHADING|%_RT_NO_TESSELLATION|%_RT_SAMPLE4)(0)(0)(0)(0)(PS)
+[ShaderList_PC.txt]<2>Water@WaterPS(%SUN_SHINE|%FOAM)(%_RT_FOG|%_RT_SAMPLE3|%_RT_QUALITY|%_RT_NO_TESSELLATION|%_RT_SAMPLE4)(0)(0)(0)(0)(PS)

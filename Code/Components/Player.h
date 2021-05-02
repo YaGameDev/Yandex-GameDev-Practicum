@@ -16,10 +16,13 @@ class Player final : public IEntityComponent
 	Cry::DefaultComponents::CCharacterControllerComponent* m_character = nullptr;
 	Cry::DefaultComponents::CCameraComponent* m_camera = nullptr;
 
+	bool m_debug = false;
+
 	Matrix34 m_bodyOrientation = IDENTITY;
 	Vec3 m_cameraViewDir = FORWARD_DIRECTION;
-
 	Vec2 m_mouseDelta = ZERO;
+
+	std::vector<Vec3> m_grabbedObjectPoints;
 	
 	enum class EInputFlag : uint8
 	{
@@ -42,8 +45,9 @@ class Player final : public IEntityComponent
 
 	void updateMovement(float delta);
 	void updateCamera(float delta);
+	void lockLocalPoints();
 	void updateGrabbedObject(float delta);
-	void doPerspectiveScaling(IEntity* entity);
+	void doPerspectiveScaling();
 	void pickObject();
 	IEntity* rayCastFromCamera(ray_hit &hit, const Vec3 &dir, int objTypes);
 

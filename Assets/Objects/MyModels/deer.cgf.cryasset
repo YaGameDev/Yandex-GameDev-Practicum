@@ -1,0 +1,14 @@
+<AssetMetadata version="0" type="Mesh" guid="b066a2c7-1fd0-307d-831c-9e577d5cb937" source="deer.FBX">
+ <Files>
+  <File path="deer.cgf"/>
+ </Files>
+ <Details>
+  <Detail name="materialCount">3</Detail>
+  <Detail name="triangleCount">1328</Detail>
+  <Detail name="vertexCount">2656</Detail>
+  <Detail name="16BitPrecision">false</Detail>
+ </Details>
+ <Dependencies>
+  <Path usageCount="1">%ENGINE%/EngineAssets/Materials/material_default.mtl</Path>
+ </Dependencies>
+</AssetMetadata>

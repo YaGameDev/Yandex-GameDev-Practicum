@@ -1,0 +1,12 @@
+<AssetMetadata version="0" type="Material" guid="00418628-f484-2f4e-91a8-c41e5249cb11" source="" timestamp="1619542934">
+ <Files>
+  <File path="editorprimitive.mtl"/>
+ </Files>
+ <Details>
+  <Detail name="subMaterialCount">0</Detail>
+  <Detail name="textureCount">1</Detail>
+ </Details>
+ <Dependencies>
+  <Path usageCount="1">%ENGINE%/EngineAssets/Textures/grey.dds</Path>
+ </Dependencies>
+</AssetMetadata>
