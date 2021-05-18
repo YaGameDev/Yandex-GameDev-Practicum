@@ -1,5 +1,3 @@
-// Copyright 2001-2019 Crytek GmbH / Crytek Group. All rights reserved.
-
 #pragma once
 
 #include <CryEntitySystem/IEntitySystem.h>
@@ -10,13 +8,22 @@
 
 class Player final : public IEntityComponent
 {
-	const float GRAB_OBJECT_DIST = 2;
+	const float DEFAULT_GRAB_OBJECT_DIST = 2;
+	float GRAB_OBJECT_DIST;
+
+	const float CHARACHTER_Z = 1.2f;
+	const float CHARACHTER_RADIUS = 0.8;
+	const float CHARACHTER_HEIGHT = 1.8;
+	const float CHARACHTER_MOVESPEED = 50.f;
 
 	Cry::DefaultComponents::CInputComponent* m_input = nullptr;
 	Cry::DefaultComponents::CCharacterControllerComponent* m_character = nullptr;
 	Cry::DefaultComponents::CCameraComponent* m_camera = nullptr;
 
+	float m_scale = 1.f;
 	bool m_debug = false;
+	bool m_shouldTeleport = false;
+	Vec3 m_teleportVelocity = ZERO;
 
 	Matrix34 m_bodyOrientation = IDENTITY;
 	Vec3 m_cameraViewDir = FORWARD_DIRECTION;
@@ -50,6 +57,11 @@ class Player final : public IEntityComponent
 	void doPerspectiveScaling();
 	void pickObject();
 	IEntity* rayCastFromCamera(ray_hit &hit, const Vec3 &dir, int objTypes);
+	void applyCharacterScale(float scale);
+
+public:
+	void teleport(Vec3 to, float zAng, float setScale);
+	float getScale();
 
 public:
 	Player() = default;

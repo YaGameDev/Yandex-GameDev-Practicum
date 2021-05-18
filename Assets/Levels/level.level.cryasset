@@ -1,10 +1,8 @@
-<AssetMetadata version="0" type="Level" guid="68779bd1-74c8-2c80-1c0e-3a60bc1a9723" source="" timestamp="1619958239">
+<AssetMetadata version="0" type="Level" guid="68779bd1-74c8-2c80-1c0e-3a60bc1a9723" source="" timestamp="1621344391">
  <Files>
   <File path="level/level.level"/>
  </Files>
  <Dependencies>
-  <Path>%editor%/materials/areasolid.dds</Path>
-  <Path>%editor%/materials/areasolid.mtl</Path>
   <Path>%engine%/engineassets/icons/averagememoryusage.dds</Path>
   <Path>%engine%/engineassets/icons/highmemoryusage.dds</Path>
   <Path>%engine%/engineassets/icons/livepreview.dds</Path>
@@ -17,26 +15,19 @@
   <Path>%engine%/engineassets/materials/fog/oceanoutoflowspec.mtl</Path>
   <Path>%engine%/engineassets/materials/material_default.mtl</Path>
   <Path>%engine%/engineassets/materials/material_terrain_default.mtl</Path>
-  <Path>%engine%/engineassets/materials/meshimporter/mi_previewvertexalpha.mtl</Path>
-  <Path>%engine%/engineassets/materials/meshimporter/mi_previewvertexcolor.mtl</Path>
   <Path>%engine%/engineassets/materials/water/ocean_default.mtl</Path>
   <Path>%engine%/engineassets/materials/water/wateroceanbottom.mtl</Path>
   <Path>%engine%/engineassets/objects/helper.mtl</Path>
   <Path>%engine%/engineassets/objects/primitive_cube.cgf</Path>
   <Path>%engine%/engineassets/objects/primitive_sphere.cgf</Path>
-  <Path>%engine%/engineassets/texturemsg/color_black.dds</Path>
   <Path>%engine%/engineassets/texturemsg/defaultnouvs.dds</Path>
   <Path>%engine%/engineassets/texturemsg/defaultsolids.mtl</Path>
-  <Path>%engine%/engineassets/textures/default_probe_cm.dds</Path>
-  <Path>%engine%/engineassets/textures/default_probe_cm_diff.dds</Path>
   <Path>%engine%/engineassets/textures/grey.dds</Path>
   <Path>%engine%/engineassets/textures/skys/night/half_moon.dds</Path>
   <Path usageCount="1">Libs/environmentpresets/test.env</Path>
   <Path>materials/mymats/editorprimitive.mtl</Path>
   <Path>objects/mymodels/assets.cgf</Path>
   <Path>objects/mymodels/cat.cgf</Path>
-  <Path>objects/mymodels/cat.cgf</Path>
-  <Path>objects/mymodels/deer.cgf</Path>
   <Path>objects/table2/table_mesh.cgf</Path>
   <Path>scripts/ai/factions.xml</Path>
  </Dependencies>

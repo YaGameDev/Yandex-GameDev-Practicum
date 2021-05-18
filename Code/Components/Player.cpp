@@ -14,18 +14,18 @@
 #include <CryCore/StaticInstanceList.h>
 
 #include <DefaultComponents/Physics/RigidBodyComponent.h>
+#include <DefaultComponents/Geometry/StaticMeshComponent.h>
 #include <DefaultComponents/Input/InputComponent.h>
 
 void Player::Initialize()
 {
-	const float character_Y = 1.2f;
-
 	m_character = m_pEntity->GetOrCreateComponent<Cry::DefaultComponents::CCharacterControllerComponent>();
+	
 	m_camera = m_pEntity->GetOrCreateComponent<Cry::DefaultComponents::CCameraComponent>();
 	m_input = m_pEntity->GetOrCreateComponent<Cry::DefaultComponents::CInputComponent>();
 
 
-	m_character->SetTransformMatrix(Matrix34::Create(Vec3(1.f), IDENTITY, Vec3(0, 0, character_Y)));
+	m_character->SetTransformMatrix(Matrix34::Create(Vec3(1.f), IDENTITY, Vec3(0, 0, CHARACHTER_Z * m_scale)));
 
 	m_input->RegisterAction("player", "moveleft", [this](int activationMode, float value) { HandleInputFlagChange(EInputFlag::MoveLeft, (EActionActivationMode)activationMode);  });
 	m_input->BindAction("player", "moveleft", eAID_KeyboardMouse, EKeyId::eKI_A);
@@ -63,37 +63,67 @@ void Player::Initialize()
 			m_debug ^= 1;
 	});
 	m_input->BindAction("player", "toggle_debug", eAID_KeyboardMouse, EKeyId::eKI_Tab);
+
+	m_input->RegisterAction("player", "jump", [this](int activationMode, float value) {
+		if (activationMode == eAAM_OnPress)
+		{
+		}
+	});
+	m_input->BindAction("player", "jump", eAID_KeyboardMouse, EKeyId::eKI_Space);
 }
 
 Cry::Entity::EventFlags Player::GetEventMask() const
 {
-	return Cry::Entity::EEvent::Update;// | Cry::Entity::EEvent::PrePhysicsUpdate;
+	return Cry::Entity::EEvent::Update | Cry::Entity::EEvent::GameplayStarted;// | Cry::Entity::EEvent::PrePhysicsUpdate;
 }
 
 void Player::ProcessEvent(const SEntityEvent& event)
 {
 	switch (event.event)
 	{
-	case Cry::Entity::EEvent::Update:
-	{
-		const float delta = event.fParam[0];
+		case Cry::Entity::EEvent::Update:
+		{
+			const float delta = event.fParam[0];
 
-		updateMovement(delta);
-		updateCamera(delta);
-		updateGrabbedObject(delta);
-	}
-	break;
+			updateMovement(delta);
+			updateCamera(delta);
+			updateGrabbedObject(delta);
+		}
+		break;
+
+		case Cry::Entity::EEvent::GameplayStarted:
+		{
+			m_camera->SetTransformMatrix(IDENTITY);
+			m_scale = 1.f;
+			//CryLogAlways("PLAYER GAMEPLAY STARTED!");
+			applyCharacterScale(m_scale);
+		}
+		break;
 	}
 }
 
 
 void Player::updateMovement(float delta)
 {
+	if (m_debug) {
+		IPersistantDebug* db = gEnv->pGameFramework->GetIPersistantDebug();
+		db->Begin("DEBUG_TEXT", true);
+		db->AddText(0, 0, 4, ColorF(), 1, "on ground %d", m_character->IsOnGround());
+	}
+	//Vec3 pos = m_character->GetTransformMatrix().GetTranslation();
+	//CryLogAlways("pos tr %f %f %f", pos.x, pos.y, pos.z);
+	//CryLogAlways("pos %f %f %f", pos.x, pos.y, pos.z);
+
+	if (m_shouldTeleport) {
+		m_shouldTeleport = false;
+		m_character->AddVelocity(m_teleportVelocity * m_scale);
+	}
+
 	if (!m_character->IsOnGround())
 		return;
 
 	Vec3 velocity = ZERO;
-	const float moveSpeed = 50.0f;
+	const float moveSpeed = CHARACHTER_MOVESPEED * m_scale;
 
 	if (m_inputFlags & EInputFlag::MoveLeft)
 		velocity.x -= 1.f;
@@ -137,7 +167,7 @@ void Player::updateCamera(float delta)
 	Matrix34 localTransform = m_character->GetTransformMatrix();
 	camOrientation = CCamera::CreateOrientationYPR(ypr);
 	localTransform.SetRotation33(camOrientation);
-	localTransform.AddTranslation(Vec3(0, 0, cameraHeight));
+	localTransform.AddTranslation(Vec3(0, 0, cameraHeight * m_scale));
 
 	m_camera->SetTransformMatrix(localTransform);
 
@@ -154,13 +184,17 @@ void Player::lockLocalPoints() {
 	std::vector<Vec3>& points = m_grabbedObjectPoints;
 	IGeometry* geom = spos.pGeom;
 
+	Cry::DefaultComponents::CStaticMeshComponent *mesh = m_grabbedObject->GetComponent<Cry::DefaultComponents::CStaticMeshComponent>();
+
+	Matrix34 localTransform = mesh ? mesh->GetTransformMatrix() : IDENTITY;
+
 	if (geom->GetType() == GEOM_TRIMESH) {
 		points.clear();
 
 		const mesh_data* mesh = (mesh_data*) geom->GetData();
 
 		for (int i = 0; i < mesh->nVertices; i++) {
-			points.push_back(mesh->pVertices[i]);
+			points.push_back(localTransform * mesh->pVertices[i]);
 		}
 	}
 	
@@ -296,34 +330,10 @@ void Player::doPerspectiveScaling() {
 
 	m_grabbedObject->SetPos(newPos);
 	m_grabbedObject->SetScale(Vec3(k).CompMul(m_grabbedObject->GetScale()));
-
-	//const float radius = 0.5f;
-
-	////ray_hit hit;
-	//rayCastFromCamera(hit, m_cameraViewDir * maxDist, ent_all);
-
-	//if (!hit.pCollider)
-	//	return;
-
-	//float d1 = GRAB_OBJECT_DIST;
-	//float f = hit.dist;
-	//float d2 = f / (1 + radius / d1);
-
-	//float k = d2 / d1;
-
-	////Vec3 origin = m_camera->GetWorldTransformMatrix().GetTranslation();
-	//const Vec3 &dir = m_cameraViewDir;
-
-	//Vec3 newPos = origin + dir * d1 * k;
-
-	//entity->SetPos(newPos);
-	//entity->SetScale(Vec3(k));
-	//entity->GetPhysics()->AddGeometry;
-
-	//CryLogAlways("d1 = %f\nk = %f\nd2 = %f\nf = %f\nk * r - f = %f", d1, k, d2, f, k * radius - f);
 }
 
 void Player::pickObject() {
+	const float volumeThreshold = 40.f;
 	const float maxPickDist = 2.5;
 
 	if (m_grabbedObject == nullptr) {
@@ -332,6 +342,12 @@ void Player::pickObject() {
 
 		if (hit.pCollider) {
 			IEntity* entity = gEnv->pEntitySystem->GetEntityFromPhysics(hit.pCollider);
+			
+			AABB aabb;
+			entity->GetWorldBounds(aabb);
+
+			//CryLogAlways("vol %f", aabb.GetVolume());
+
 
 			m_grabbedObject = entity;
 
@@ -377,6 +393,40 @@ IEntity* Player::rayCastFromCamera(ray_hit &hit, const Vec3 &dir, int objTypes) 
 		return entity;
 	}
 	return nullptr;
+}
+
+void Player::applyCharacterScale(float scale)
+{
+	m_scale = scale;
+	m_character->SetTransformMatrix(Matrix34::Create(Vec3(1.f), IDENTITY, Vec3(0, 0, CHARACHTER_Z * m_scale)));
+
+	auto& params = m_character->GetPhysicsParameters();
+
+	params.m_height = CHARACHTER_HEIGHT * m_scale;
+	params.m_radius = CHARACHTER_RADIUS * m_scale;
+
+	m_character->Physicalize();
+
+	GRAB_OBJECT_DIST = DEFAULT_GRAB_OBJECT_DIST * m_scale;
+}
+
+void Player::teleport(Vec3 to, float zAng, float setScale)
+{
+	m_shouldTeleport = true;
+	m_teleportVelocity = m_character->GetVelocity().GetRotated(Vec3(0, 0, 1), zAng);
+
+	m_pEntity->SetPos(to);
+	applyCharacterScale(setScale);
+
+	Matrix34 rot = IDENTITY;
+	rot.SetRotationZ(zAng);
+
+	m_camera->SetTransformMatrix(rot * m_camera->GetTransformMatrix());
+}
+
+float Player::getScale()
+{
+	return m_scale;
 }
 
 void Player::HandleInputFlagChange(const CEnumFlags<EInputFlag> flags, const CEnumFlags<EActionActivationMode> activationMode, const EInputFlagType type)
