@@ -1,0 +1,14 @@
+<AssetMetadata version="0" type="Material" guid="526fa837-a309-633f-8be8-1117b10ed670" source="" timestamp="1621362866">
+ <Files>
+  <File path="wall1.mtl"/>
+ </Files>
+ <Details>
+  <Detail name="subMaterialCount">0</Detail>
+  <Detail name="textureCount">3</Detail>
+ </Details>
+ <Dependencies>
+  <Path usageCount="1">Objects/props/misc/shrine/textures/wooden_shrines_diff.dds</Path>
+  <Path usageCount="1">Objects/props/misc/shrine/textures/wooden_shrines_ddna.dds</Path>
+  <Path usageCount="1">Objects/props/misc/shrine/textures/wooden_shrines_spec.dds</Path>
+ </Dependencies>
+</AssetMetadata>

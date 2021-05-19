@@ -1,0 +1,10 @@
+<AssetMetadata version="0" type="Texture" guid="b6048a4c-9a21-4111-32a6-fdafd9615dd0" source="texturescom_ground_soil8_2x2_1k_normal.tif">
+ <Files>
+  <File path="texturescom_ground_soil8_2x2_1k_normal.dds"/>
+ </Files>
+ <Details>
+  <Detail name="width">1024</Detail>
+  <Detail name="height">1024</Detail>
+  <Detail name="mipCount">9</Detail>
+ </Details>
+</AssetMetadata>

@@ -1,0 +1,12 @@
+<Material MtlFlags="524288" Shader="Illum" GenMask="6000000000020" StringGenMask="%NORMAL_MAP%SPECULAR_MAP%SUBSURFACE_SCATTERING" SurfaceType="" MatTemplate="" Diffuse="0.012983033,0.015208514,0.0030352699" Opacity="1" Shininess="9.9450006" CloakAmount="0" vertModifType="0" LayerAct="1">
+ <Textures>
+  <Texture Map="Diffuse" File="Objects/props/misc/shrine/textures/wooden_shrines_diff.dds">
+   <TexMod TexMod_RotateType="0" TexMod_TexGenType="0" TexMod_bTexGenProjected="0"/>
+  </Texture>
+  <Texture Map="Bumpmap" File="Objects/props/misc/shrine/textures/wooden_shrines_ddna.dds">
+   <TexMod TexMod_RotateType="0" TexMod_TexGenType="0" TexMod_bTexGenProjected="0"/>
+  </Texture>
+  <Texture Map="Specular" File="Objects/props/misc/shrine/textures/wooden_shrines_spec.dds"/>
+ </Textures>
+ <PublicParams EmittanceMapGamma="1" SSSIndex="0"/>
+</Material>

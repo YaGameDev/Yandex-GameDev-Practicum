@@ -1,0 +1,10 @@
+<AssetMetadata version="0" type="Texture" guid="d55decbf-a552-3f1c-2db4-192a4c0a0d33" source="texturescom_concretestucco0125_2_m.tif">
+ <Files>
+  <File path="texturescom_concretestucco0125_2_m.dds"/>
+ </Files>
+ <Details>
+  <Detail name="width">1600</Detail>
+  <Detail name="height">1050</Detail>
+  <Detail name="mipCount">1</Detail>
+ </Details>
+</AssetMetadata>

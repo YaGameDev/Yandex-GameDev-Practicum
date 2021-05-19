@@ -1,0 +1,10 @@
+<AssetMetadata version="0" type="Texture" guid="f8fc2544-6ec7-362d-902c-63b4630a1488" source="texturescom_concretestucco0125_1_seamless_s.tif">
+ <Files>
+  <File path="texturescom_concretestucco0125_1_seamless_s.dds"/>
+ </Files>
+ <Details>
+  <Detail name="width">1024</Detail>
+  <Detail name="height">1024</Detail>
+  <Detail name="mipCount">9</Detail>
+ </Details>
+</AssetMetadata>

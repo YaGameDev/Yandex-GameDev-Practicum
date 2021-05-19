@@ -1,0 +1,10 @@
+<AssetMetadata version="0" type="Texture" guid="8883ae5f-b6ae-3bbb-6736-9b4056a20380" source="texturescom_ground_soil8_2x2_1k_albedo.tif">
+ <Files>
+  <File path="texturescom_ground_soil8_2x2_1k_albedo.dds"/>
+ </Files>
+ <Details>
+  <Detail name="width">1024</Detail>
+  <Detail name="height">1024</Detail>
+  <Detail name="mipCount">9</Detail>
+ </Details>
+</AssetMetadata>

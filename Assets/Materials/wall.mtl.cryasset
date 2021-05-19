@@ -1,0 +1,14 @@
+<AssetMetadata version="0" type="Material" guid="94c60ea0-8f1d-42a9-946b-0d7e5b0f0b42" source="" timestamp="1621398367">
+ <Files>
+  <File path="wall.mtl"/>
+ </Files>
+ <Details>
+  <Detail name="subMaterialCount">0</Detail>
+  <Detail name="textureCount">3</Detail>
+ </Details>
+ <Dependencies>
+  <Path usageCount="1">./walls/asdf/texturescom_wood_plankstemple02_2x2_512_albedo.dds</Path>
+  <Path usageCount="1">./walls/asdf/texturescom_wood_plankstemple02_2x2_512_normal.dds</Path>
+  <Path usageCount="1">./walls/asdf/texturescom_wood_plankstemple02_2x2_512_height.dds</Path>
+ </Dependencies>
+</AssetMetadata>

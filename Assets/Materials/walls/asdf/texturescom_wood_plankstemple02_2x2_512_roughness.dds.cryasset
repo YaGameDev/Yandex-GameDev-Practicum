@@ -1,0 +1,10 @@
+<AssetMetadata version="0" type="Texture" guid="e7f8df5b-b033-5df1-55fb-544b7e8ba6db" source="texturescom_wood_plankstemple02_2x2_512_roughness.tif">
+ <Files>
+  <File path="texturescom_wood_plankstemple02_2x2_512_roughness.dds"/>
+ </Files>
+ <Details>
+  <Detail name="width">512</Detail>
+  <Detail name="height">512</Detail>
+  <Detail name="mipCount">8</Detail>
+ </Details>
+</AssetMetadata>

@@ -1,0 +1,17 @@
+<Material MtlFlags="526336" Shader="Terrain.Layer" GenMask="200000020" StringGenMask="%NORMAL_MAP%TEMP_TERRAIN" SurfaceType="" MatTemplate="" Diffuse="0.090841711,0.090841711,0" Opacity="1" Shininess="9.9450016" CloakAmount="0" vertModifType="0" LayerAct="1">
+ <Textures>
+  <Texture Map="Diffuse" File="./soil/texturescom_ground_soil8_2x2_1k_albedo.dds">
+   <TexMod TexMod_RotateType="0" TexMod_TexGenType="0" TexMod_bTexGenProjected="0"/>
+  </Texture>
+  <Texture Map="Bumpmap" File="./soil/texturescom_ground_soil8_2x2_1k_normal.dds">
+   <TexMod TexMod_RotateType="0" TexMod_TexGenType="0" TexMod_bTexGenProjected="0"/>
+  </Texture>
+  <Texture Map="Detail" File="./soil/texturescom_ground_soil8_2x2_1k_albedo.dds">
+   <TexMod TexMod_RotateType="0" TexMod_TexGenType="0" TexMod_bTexGenProjected="0"/>
+  </Texture>
+  <Texture Map="Heightmap" File="./soil/texturescom_ground_soil8_2x2_1k_height.dds">
+   <TexMod TexMod_RotateType="0" TexMod_TexGenType="0" TexMod_bTexGenProjected="0"/>
+  </Texture>
+ </Textures>
+ <PublicParams BlendFactor="0" BlendFalloff="1" DetailTextureHighPassRange="15" DetailTextureStrength="1" DetailTextureStrengthFade="1" NormalMapBumpiness="1"/>
+</Material>

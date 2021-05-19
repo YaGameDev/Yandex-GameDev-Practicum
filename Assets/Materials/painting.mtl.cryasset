@@ -1,0 +1,12 @@
+<AssetMetadata version="0" type="Material" guid="88fbd5d7-b0e8-7b07-c9ad-084a1d6ca281" source="" timestamp="1620609139">
+ <Files>
+  <File path="painting.mtl"/>
+ </Files>
+ <Details>
+  <Detail name="subMaterialCount">0</Detail>
+  <Detail name="textureCount">1</Detail>
+ </Details>
+ <Dependencies>
+  <Path usageCount="1">./painting/terrain_detail_material.dds</Path>
+ </Dependencies>
+</AssetMetadata>

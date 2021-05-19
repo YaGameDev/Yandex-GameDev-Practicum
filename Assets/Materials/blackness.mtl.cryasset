@@ -1,0 +1,12 @@
+<AssetMetadata version="0" type="Material" guid="7e6b4920-61ce-04fd-ecef-eb27a47c32b8" source="" timestamp="1621403369">
+ <Files>
+  <File path="blackness.mtl"/>
+ </Files>
+ <Details>
+  <Detail name="subMaterialCount">0</Detail>
+  <Detail name="textureCount">1</Detail>
+ </Details>
+ <Dependencies>
+  <Path usageCount="1">%engine%/engineassets/textures/BlackCM.dds</Path>
+ </Dependencies>
+</AssetMetadata>

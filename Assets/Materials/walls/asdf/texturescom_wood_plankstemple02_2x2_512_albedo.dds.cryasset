@@ -1,0 +1,10 @@
+<AssetMetadata version="0" type="Texture" guid="96eca392-a3bf-2c42-d155-3bedd32362e0" source="texturescom_wood_plankstemple02_2x2_512_albedo.tif">
+ <Files>
+  <File path="texturescom_wood_plankstemple02_2x2_512_albedo.dds"/>
+ </Files>
+ <Details>
+  <Detail name="width">512</Detail>
+  <Detail name="height">512</Detail>
+  <Detail name="mipCount">8</Detail>
+ </Details>
+</AssetMetadata>

@@ -1,0 +1,12 @@
+<AssetMetadata version="0" type="Material" guid="c2ffdd7b-dad1-b05d-8138-3c1e15c43f07" source="" timestamp="1620604602">
+ <Files>
+  <File path="ceiling.mtl"/>
+ </Files>
+ <Details>
+  <Detail name="subMaterialCount">0</Detail>
+  <Detail name="textureCount">1</Detail>
+ </Details>
+ <Dependencies>
+  <Path usageCount="1">./ceiling/texturescom_concretestucco0125_1_seamless_s.dds</Path>
+ </Dependencies>
+</AssetMetadata>
