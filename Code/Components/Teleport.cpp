@@ -17,7 +17,7 @@
 
 #include "Components/Player.h"
 
-bool debug = true;
+bool debug = false;
 
 void Teleport::Initialize()
 {
