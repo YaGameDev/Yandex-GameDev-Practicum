@@ -11,7 +11,7 @@ class Player final : public IEntityComponent
 	const float DEFAULT_GRAB_OBJECT_DIST = 0.2;
 	float GRAB_OBJECT_DIST = DEFAULT_GRAB_OBJECT_DIST;
 
-	const float CHARACHTER_Z = 1.2f;
+	const float CHARACHTER_Z = 1.4f;
 	const float CHARACHTER_RADIUS = 0.8;
 	const float CHARACHTER_HEIGHT = 1.8;
 	const float CHARACHTER_MOVESPEED = 50.f;

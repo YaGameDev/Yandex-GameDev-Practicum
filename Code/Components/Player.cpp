@@ -147,7 +147,7 @@ void Player::updateMovement(float delta)
 
 void Player::updateCamera(float delta)
 {
-	const float cameraHeight = 0.7;
+	const float cameraHeight = 0.5;
 	const float rotationSpeed = 0.001f;
 	const float rotationLimitsMinPitch = -1.55f;
 	const float rotationLimitsMaxPitch = 1.55f;
