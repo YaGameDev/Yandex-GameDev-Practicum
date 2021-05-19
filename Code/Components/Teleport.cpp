@@ -36,7 +36,7 @@ bool isPointInside(const Vec3& point, const Vec3 &selfPos, const Vec3 &size, flo
 
 	AABB aabb(-size, size);
 
-	if (debug) {
+	/*if (debug) {
 		IPersistantDebug* db = gEnv->pGameFramework->GetIPersistantDebug();
 
 		if (aabb.IsContainPoint(newPoint)) {
@@ -45,7 +45,7 @@ bool isPointInside(const Vec3& point, const Vec3 &selfPos, const Vec3 &size, flo
 		else {
 			db->AddSphere(selfPos + newPoint, 0.2, ColorF(1, 0, 0), 1);
 		}
-	}
+	}*/
 
 	return aabb.IsContainPoint(newPoint);
 }
@@ -115,33 +115,19 @@ void Teleport::ProcessEvent(const SEntityEvent& event)
 			else if (m_playerInside) {
 				m_playerInside = false;
 
+				Teleport* teleportComp = m_gateway->GetComponent<Teleport>();
+				assert(teleportComp && "Teleport component found!");
+	
+				float totalScale = teleportComp->scale / scale;
+
 				float angDiff = alpha2 - alpha1;
-				Vec3 diff = playerPos - pos;
+				Vec3 diff = (playerPos - pos) * totalScale;
 				diff = diff.GetRotated(Vec3(0, 0, 1), angDiff);
 
 				Vec3 newPlayerPos = m_gateway->GetWorldPos() + diff;
 
-				Teleport* teleportComp = m_gateway->GetComponent<Teleport>();
-				assert(teleportComp && "Teleport component found!");
+				playerComp->teleport(newPlayerPos, angDiff, totalScale);
 
-				playerComp->teleport(newPlayerPos, angDiff, teleportComp->scale);
-
-
-				//Matrix34 mat = m_player->GetWorldTM();
-				//mat.SetTranslation(newPlayerPos);
-				//m_player->SetWorldTM(mat);
-
-				/*pe_params_pos posParam;
-				m_player->GetPhysics()->GetParams(&posParam);
-				posParam.pos = m_gateway->GetWorldPos() + diff;
-				m_player->GetPhysics()->SetParams(&posParam);*/
-
-				/*pe_status_dynamics dynamics;
-				m_player->GetPhysics()->GetStatus(&dynamics);
-
-				m_player->SetPos(newPlayerPos);
-
-				m_player->GetPhysics()->Action(&action);*/
 				CryLogAlways("TP!");
 			}
 		}

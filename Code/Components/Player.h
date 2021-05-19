@@ -8,8 +8,8 @@
 
 class Player final : public IEntityComponent
 {
-	const float DEFAULT_GRAB_OBJECT_DIST = 2;
-	float GRAB_OBJECT_DIST;
+	const float DEFAULT_GRAB_OBJECT_DIST = 0.2;
+	float GRAB_OBJECT_DIST = DEFAULT_GRAB_OBJECT_DIST;
 
 	const float CHARACHTER_Z = 1.2f;
 	const float CHARACHTER_RADIUS = 0.8;
@@ -20,6 +20,7 @@ class Player final : public IEntityComponent
 	Cry::DefaultComponents::CCharacterControllerComponent* m_character = nullptr;
 	Cry::DefaultComponents::CCameraComponent* m_camera = nullptr;
 
+	float m_start_scale = 1.f;
 	float m_scale = 1.f;
 	bool m_debug = false;
 	bool m_shouldTeleport = false;
@@ -74,6 +75,8 @@ public:
 		desc.SetLabel("Player");
 		desc.SetDescription("Player spawn point");
 		desc.SetComponentFlags({ IEntityComponent::EFlags::Transform, IEntityComponent::EFlags::Socket, IEntityComponent::EFlags::Attach });
+
+		desc.AddMember(&Player::m_start_scale, 'scal', "Scale", "Scale", "Start Scaling", 1.f);
 	}
 
 protected:

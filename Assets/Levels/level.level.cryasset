@@ -1,4 +1,4 @@
-<AssetMetadata version="0" type="Level" guid="68779bd1-74c8-2c80-1c0e-3a60bc1a9723" source="" timestamp="1621344391">
+<AssetMetadata version="0" type="Level" guid="68779bd1-74c8-2c80-1c0e-3a60bc1a9723" source="" timestamp="1621424133">
  <Files>
   <File path="level/level.level"/>
  </Files>
@@ -29,6 +29,5 @@
   <Path>objects/mymodels/assets.cgf</Path>
   <Path>objects/mymodels/cat.cgf</Path>
   <Path>objects/table2/table_mesh.cgf</Path>
-  <Path>scripts/ai/factions.xml</Path>
  </Dependencies>
 </AssetMetadata>

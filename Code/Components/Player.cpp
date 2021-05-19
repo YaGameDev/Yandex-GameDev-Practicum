@@ -94,9 +94,9 @@ void Player::ProcessEvent(const SEntityEvent& event)
 		case Cry::Entity::EEvent::GameplayStarted:
 		{
 			m_camera->SetTransformMatrix(IDENTITY);
-			m_scale = 1.f;
+			m_scale = m_start_scale;
 			//CryLogAlways("PLAYER GAMEPLAY STARTED!");
-			applyCharacterScale(m_scale);
+			applyCharacterScale(1.f);
 		}
 		break;
 	}
@@ -116,7 +116,7 @@ void Player::updateMovement(float delta)
 
 	if (m_shouldTeleport) {
 		m_shouldTeleport = false;
-		m_character->AddVelocity(m_teleportVelocity * m_scale);
+		m_character->AddVelocity(m_teleportVelocity);
 	}
 
 	if (!m_character->IsOnGround())
@@ -265,7 +265,7 @@ void Player::updateGrabbedObject(float delta)
 }
 
 void Player::doPerspectiveScaling() {
-	const float maxDist = 30;
+	const float maxDist = 150;
 	const float wallMargin = 0.05f;
 
 	std::vector<Vec3> points = m_grabbedObjectPoints;
@@ -275,7 +275,8 @@ void Player::doPerspectiveScaling() {
 
 	Vec3 origin = m_camera->GetWorldTransformMatrix().GetTranslation();
 	ray_hit hit;
-
+	
+	float minQ = 0;
 	float minDist = 2 * maxDist;
 	int minRay = -1;
 
@@ -288,11 +289,25 @@ void Player::doPerspectiveScaling() {
 		{
 			rayCastFromCamera(hit, dir, ent_all);
 
+			if (!hit.pCollider)
+				continue;
+			
 			float hit_dist = std::max(hit.dist - wallMargin, 0.f);
 
-			if (hit.pCollider && (hit_dist - ln) < minDist) {
-				minDist = hit_dist - ln;
+			float q = (hit_dist - ln) / ln;
+
+			if (minRay == -1 || q < minQ) {
+				minDist = hit_dist;
+				minQ = q;
 				minRay = i;
+			}
+
+			if (m_debug)
+			{
+				IPersistantDebug* db = gEnv->pGameFramework->GetIPersistantDebug();
+				db->Begin("scale", false);
+				db->AddLine(points[i], hit.pt, ColorF(0.5, 0.5, 0.5), 40.f);
+				db->AddSphere(Vec3::CreateLerp(points[i], hit.pt, 0.5), 0.05, ColorF(0, 0, 0), 40);
 			}
 		}
 	}
@@ -309,7 +324,7 @@ void Player::doPerspectiveScaling() {
 	Vec3 dir = old / old_ln;
 
 	float oldP = old.dot(m_cameraViewDir);
-	float newP = oldP * (minDist + old_ln) / old_ln;
+	float newP = oldP * minDist / old_ln;
 
 	float d1 = GRAB_OBJECT_DIST;
 	float f = newP;
@@ -319,26 +334,28 @@ void Player::doPerspectiveScaling() {
 
 	Vec3 newPos = origin + m_cameraViewDir * d1 * k;
 
-	if (false)
+	if (m_debug)
 	{
 		IPersistantDebug* db = gEnv->pGameFramework->GetIPersistantDebug();
 		db->Begin("scale", false);
-		db->AddSphere(origin + m_cameraViewDir * oldP, 0.05f, ColorF(0, 0, 1), 40.0);
+		db->AddSphere(origin + m_cameraViewDir * oldP, 0.05f, ColorF(1, 0, 0), 40.0);
 		db->AddSphere(origin + m_cameraViewDir * newP, 0.05f, ColorF(1, 0, 1), 40.0);
 		db->AddSphere(points[minRay], 0.05f, ColorF(1, 1, 1), 40.0);
+
+		db->AddSphere(origin + dir * minDist, 0.05f, ColorF(0, 0, 0), 40.0);
 	}
 
 	m_grabbedObject->SetPos(newPos);
-	m_grabbedObject->SetScale(Vec3(k).CompMul(m_grabbedObject->GetScale()));
+	m_grabbedObject->SetScale(k * m_grabbedObject->GetScale());
 }
 
 void Player::pickObject() {
 	const float volumeThreshold = 40.f;
-	const float maxPickDist = 2.5;
+	const float pickRange = 150.f;
 
 	if (m_grabbedObject == nullptr) {
 		ray_hit hit;
-		rayCastFromCamera(hit, m_cameraViewDir * GRAB_OBJECT_DIST, ent_rigid | ent_sleeping_rigid);
+		rayCastFromCamera(hit, m_cameraViewDir * pickRange, ent_rigid | ent_sleeping_rigid);
 
 		if (hit.pCollider) {
 			IEntity* entity = gEnv->pEntitySystem->GetEntityFromPhysics(hit.pCollider);
@@ -348,14 +365,19 @@ void Player::pickObject() {
 
 			//CryLogAlways("vol %f", aabb.GetVolume());
 
-
 			m_grabbedObject = entity;
-
 		
 			m_grabbedObject->EnablePhysics(false);
 			lockLocalPoints();
+
+			//float dist = hit.dist;
+			float dist = (m_grabbedObject->GetPos() - m_camera->GetWorldTransformMatrix().GetTranslation()).len();
+			float k = GRAB_OBJECT_DIST / dist;
+
+			m_grabbedObject->SetScale(m_grabbedObject->GetScale() * k);
 		}
 	}
+
 	else {
 		m_grabbedObject->EnablePhysics(true);
 
@@ -385,7 +407,7 @@ IEntity* Player::rayCastFromCamera(ray_hit &hit, const Vec3 &dir, int objTypes) 
 		if (m_debug) {
 			IPersistantDebug* db = gEnv->pGameFramework->GetIPersistantDebug();
 			db->Begin("RC hit", false);
-			db->AddSphere(hit.pt, 0.05f, ColorF(0, 0, 1), 4.0);
+			db->AddSphere(hit.pt, 0.05f, ColorF(0, 0, 1), 40.0);
 		}
 
 		IPhysicalEntity* physEnt = hit.pCollider;
@@ -397,7 +419,7 @@ IEntity* Player::rayCastFromCamera(ray_hit &hit, const Vec3 &dir, int objTypes) 
 
 void Player::applyCharacterScale(float scale)
 {
-	m_scale = scale;
+	m_scale *= scale;
 	m_character->SetTransformMatrix(Matrix34::Create(Vec3(1.f), IDENTITY, Vec3(0, 0, CHARACHTER_Z * m_scale)));
 
 	auto& params = m_character->GetPhysicsParameters();
@@ -407,21 +429,28 @@ void Player::applyCharacterScale(float scale)
 
 	m_character->Physicalize();
 
-	GRAB_OBJECT_DIST = DEFAULT_GRAB_OBJECT_DIST * m_scale;
+	//GRAB_OBJECT_DIST = DEFAULT_GRAB_OBJECT_DIST * m_scale;
+	//if (m_grabbedObject) {
+	//	m_grabbedObject->SetScale(m_grabbedObject->GetScale() * scale);
+	//}
 }
 
-void Player::teleport(Vec3 to, float zAng, float setScale)
+void Player::teleport(Vec3 to, float zAng, float scale)
 {
 	m_shouldTeleport = true;
-	m_teleportVelocity = m_character->GetVelocity().GetRotated(Vec3(0, 0, 1), zAng);
+	m_teleportVelocity = m_character->GetVelocity().GetRotated(Vec3(0, 0, 1), zAng) * scale;
 
 	m_pEntity->SetPos(to);
-	applyCharacterScale(setScale);
+	applyCharacterScale(scale);
 
 	Matrix34 rot = IDENTITY;
 	rot.SetRotationZ(zAng);
 
 	m_camera->SetTransformMatrix(rot * m_camera->GetTransformMatrix());
+
+	if (m_grabbedObject) {
+		m_grabbedObject->SetRotation(Quat(rot) * m_grabbedObject->GetRotation());
+	}
 }
 
 float Player::getScale()

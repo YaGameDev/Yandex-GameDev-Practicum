@@ -1,5 +1,5 @@
 <ObjectLayer>
- <Layer Name="Main" FullName="Main" GUID="de7e1423-444b-b1d4-7694-3f04acceaa07" Hidden="0" Frozen="0" Expanded="0" Type="0" Exportable="1" ExportLayerPak="1" DefaultLoaded="0" HavePhysics="1" IsDefaultColor="1" Color="4671303" Timestamp="1621343242">
+ <Layer Name="Main" FullName="Main" GUID="de7e1423-444b-b1d4-7694-3f04acceaa07" Hidden="0" Frozen="0" Expanded="0" Type="0" Exportable="1" ExportLayerPak="1" DefaultLoaded="0" HavePhysics="1" IsDefaultColor="1" Color="4671303" Timestamp="1621417841">
   <LayerObjects>
    <Object Type="EmptyEntity" Layer="Main" LayerGUID="de7e1423-444b-b1d4-7694-3f04acceaa07" Id="601418eb-4228-976c-7eb3-3cbe19c27bc6" Name="Entity-3" Pos="507,533,36" Rotate="1,0,0,0" Scale="1,1,1" ColorRGB="65535" UseCustomLevelLayerColor="0" MinSpec="0" MatLayersMask="0" OutdoorOnly="0" CastShadow="1" CastShadowMinspec="1" DynamicDistanceShadows="0" GIMode="0" LodRatio="100" ViewDistRatio="100" HiddenInGame="0" RecvWind="0" RenderNearest="0" NoStaticDecals="0" EntityClass="Entity" HasEntity="1">
     <Properties />
@@ -46,14 +46,14 @@
         <position>
          <element element="0"/>
          <element element="0"/>
-         <element element="1.9000001"/>
+         <element element="3.8000002"/>
         </position>
        </translation>
-       <rotation x="-46.409676" y="-4.2688683e-07" z="18.832098"/>
+       <rotation x="-0.57012874" y="-2.6680427e-08" z="84.19957"/>
        <scale>
         <element element="1"/>
-        <element element="1"/>
-        <element element="1"/>
+        <element element="0.99999988"/>
+        <element element="0.99999988"/>
        </scale>
       </Transform>
       <properties Type="Default" Active="true" NearPlane="0.050000001" FarPlane="1024" FieldOfView="1.2217305"/>
@@ -64,7 +64,7 @@
         <position>
          <element element="0"/>
          <element element="0"/>
-         <element element="1.2"/>
+         <element element="2.4000001"/>
         </position>
        </translation>
        <rotation x="0" y="-0" z="0"/>
@@ -75,7 +75,7 @@
        </scale>
       </Transform>
       <properties Networked="false">
-       <Physics Mass="80" Radius="0.80000001" Height="1.8" Capsule="true" GroundContactEps="3" SendCollisionSignal="false"/>
+       <Physics Mass="80" Radius="1.6" Height="3.5999999" Capsule="true" GroundContactEps="0" SendCollisionSignal="false"/>
        <Movement AirControl="0" AirResistance="0.2" Inertia="8" InertiaAcc="8" MaxClimb="0.87266463" MaxJump="0.87266463" MinSlide="1.2217305" MinFall="1.3962634" MaxGroundVelocity="100"/>
       </properties>
      </Component>
@@ -95,7 +95,7 @@
         <element element="1"/>
        </scale>
       </Transform>
-      <properties />
+      <properties Scale="1"/>
      </Component>
     </Components>
    </Object>
@@ -232,7 +232,7 @@
      </Component>
     </Components>
    </Object>
-   <Object Type="EntityWithComponent" Layer="Main" LayerGUID="de7e1423-444b-b1d4-7694-3f04acceaa07" Id="a75544bc-b655-1d4a-e518-79488324351e" Name="Entity-11" Pos="514.25,528.25,33" Rotate="1,0,0,0" Scale="0.2,0.2,0.2" ColorRGB="65535" UseCustomLevelLayerColor="0" MinSpec="0" MatLayersMask="0" OutdoorOnly="0" CastShadow="1" CastShadowMinspec="1" DynamicDistanceShadows="0" GIMode="0" LodRatio="100" ViewDistRatio="100" HiddenInGame="0" RecvWind="0" RenderNearest="0" NoStaticDecals="0" EntityClass="Entity" HasEntity="1">
+   <Object Type="EntityWithComponent" Layer="Main" LayerGUID="de7e1423-444b-b1d4-7694-3f04acceaa07" Id="a75544bc-b655-1d4a-e518-79488324351e" Name="Entity-11" Pos="514.25,525,33" Rotate="1,0,0,0" Scale="0.2,0.2,0.2" ColorRGB="65535" UseCustomLevelLayerColor="0" MinSpec="0" MatLayersMask="0" OutdoorOnly="0" CastShadow="1" CastShadowMinspec="1" DynamicDistanceShadows="0" GIMode="0" LodRatio="100" ViewDistRatio="100" HiddenInGame="0" RecvWind="0" RenderNearest="0" NoStaticDecals="0" EntityClass="Entity" HasEntity="1">
     <Properties />
     <Components>
      <Component CryXmlVersion="2" TypeGUID="912c6ce8-56f7-4ffa-9134-f98d4e307bd6" TypeName="Cry::DefaultComponents::CRigidBodyComponent" GUID="abf6d5ea-5433-496a-0539-ea34dbe48fdc" Name="" UserAdded="true">
@@ -330,7 +330,7 @@
     <Properties />
     <Components>
      <Component CryXmlVersion="2" TypeGUID="6a7e1851-a17f-4cec-9760-c61c196248df" TypeName="Teleport" GUID="c66323b9-deda-9d1c-75b5-984862a5c05c" Name="" UserAdded="true">
-      <properties Scale="1"/>
+      <properties Scale="2"/>
      </Component>
      <Component CryXmlVersion="2" TypeGUID="52431c11-77ee-410a-a7a7-a7fa69e79685" TypeName="Cry::DefaultComponents::CBoxPrimitiveComponent" GUID="3fb48275-205d-1225-5562-4d84ed09e8f9" Name="" UserAdded="false">
       <Transform>
@@ -349,29 +349,7 @@
        </scale>
       </Transform>
       <properties Surface="" ReactToCollisions="false">
-       <Size x="1" y="0.1" z="1"/>
-       <Physics WeightType="EWeightType::Mass" Density="9.9999997e-05" Mass="10"/>
-      </properties>
-     </Component>
-     <Component CryXmlVersion="2" TypeGUID="6ddd0033-6aaa-4b71-b8ea-108258205e29" TypeName="Cry::DefaultComponents::CStaticMeshComponent" GUID="103013f1-a348-1da0-8699-d6cbcfb66161" Name="" UserAdded="true">
-      <Transform>
-       <translation>
-        <position>
-         <element element="0"/>
-         <element element="0"/>
-         <element element="0"/>
-        </position>
-       </translation>
-       <rotation x="0" y="-0" z="0"/>
-       <scale>
-        <element element="2"/>
-        <element element="0.2"/>
-        <element element="2"/>
-       </scale>
-      </Transform>
-      <properties Type="Render" FilePath="%engine%/engineassets/objects/primitive_cube.cgf" Material="%ENGINE%/EngineAssets/Objects/editorprimitive">
-       <IEditorEntityComponent />
-       <Render ShadowSpec="Low" IgnoreVisArea="false" IgnoreTerrainLayerBlend="false" IgnoreDecalBlend="false" ViewDistRatio="100" LODDistance="100" GIMode="None"/>
+       <Size x="2" y="0.2" z="2"/>
        <Physics WeightType="EWeightType::Mass" Density="9.9999997e-05" Mass="10"/>
       </properties>
      </Component>
@@ -380,11 +358,11 @@
      <Link TargetId="6e3f79b0-a8c9-9b70-e399-826d9274956c" Name="TP" Version="1"/>
     </EntityLinks>
    </Object>
-   <Object Type="EmptyEntity" Layer="Main" LayerGUID="de7e1423-444b-b1d4-7694-3f04acceaa07" Id="6e3f79b0-a8c9-9b70-e399-826d9274956c" Name="TP2" Pos="513,530,32" Rotate="0.92610514,0,0,0.37726557" Scale="1,1,1" ColorRGB="65535" UseCustomLevelLayerColor="0" MinSpec="0" MatLayersMask="0" OutdoorOnly="0" CastShadow="1" CastShadowMinspec="1" DynamicDistanceShadows="0" GIMode="0" LodRatio="100" ViewDistRatio="100" HiddenInGame="0" RecvWind="0" RenderNearest="0" NoStaticDecals="0" EntityClass="Entity" HasEntity="1">
+   <Object Type="EmptyEntity" Layer="Main" LayerGUID="de7e1423-444b-b1d4-7694-3f04acceaa07" Id="6e3f79b0-a8c9-9b70-e399-826d9274956c" Name="TP2" Pos="513,530,31.989836" Rotate="0.92610514,0,0,0.37726557" Scale="1,1,1" ColorRGB="65535" UseCustomLevelLayerColor="0" MinSpec="0" MatLayersMask="0" OutdoorOnly="0" CastShadow="1" CastShadowMinspec="1" DynamicDistanceShadows="0" GIMode="0" LodRatio="100" ViewDistRatio="100" HiddenInGame="0" RecvWind="0" RenderNearest="0" NoStaticDecals="0" EntityClass="Entity" HasEntity="1">
     <Properties />
     <Components>
      <Component CryXmlVersion="2" TypeGUID="6a7e1851-a17f-4cec-9760-c61c196248df" TypeName="Teleport" GUID="c66323b9-deda-9d1c-75b5-984862a5c05c" Name="" UserAdded="true">
-      <properties Scale="1"/>
+      <properties Scale="0.1"/>
      </Component>
      <Component CryXmlVersion="2" TypeGUID="52431c11-77ee-410a-a7a7-a7fa69e79685" TypeName="Cry::DefaultComponents::CBoxPrimitiveComponent" GUID="90b90f86-8a91-a2d6-7d6f-a5e210ab755e" Name="" UserAdded="false">
       <Transform>
@@ -403,29 +381,7 @@
        </scale>
       </Transform>
       <properties Surface="" ReactToCollisions="false">
-       <Size x="1" y="0.1" z="1"/>
-       <Physics WeightType="EWeightType::Mass" Density="9.9999997e-05" Mass="10"/>
-      </properties>
-     </Component>
-     <Component CryXmlVersion="2" TypeGUID="6ddd0033-6aaa-4b71-b8ea-108258205e29" TypeName="Cry::DefaultComponents::CStaticMeshComponent" GUID="f9c4b2d2-b03e-1531-f34b-2e872b515113" Name="" UserAdded="true">
-      <Transform>
-       <translation>
-        <position>
-         <element element="0"/>
-         <element element="0"/>
-         <element element="0"/>
-        </position>
-       </translation>
-       <rotation x="0" y="-0" z="0"/>
-       <scale>
-        <element element="2"/>
-        <element element="0.2"/>
-        <element element="2"/>
-       </scale>
-      </Transform>
-      <properties Type="RenderAndCollider" FilePath="%engine%/engineassets/objects/primitive_cube.cgf" Material="%engine%/engineassets/objects/editorprimitive.mtl">
-       <IEditorEntityComponent />
-       <Render ShadowSpec="Low" IgnoreVisArea="false" IgnoreTerrainLayerBlend="false" IgnoreDecalBlend="false" ViewDistRatio="100" LODDistance="100" GIMode="None"/>
+       <Size x="0.1" y="0.0099999998" z="0.1"/>
        <Physics WeightType="EWeightType::Mass" Density="9.9999997e-05" Mass="10"/>
       </properties>
      </Component>
