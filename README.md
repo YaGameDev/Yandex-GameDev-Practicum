@@ -9,6 +9,6 @@ Project requires [GameSDK](https://www.cryengine.com/marketplace/product/CRYENGI
 
 ### Demo
 
-https://user-images.githubusercontent.com/6796129/131253203-3a287f98-158f-49b6-89f3-58d1386538e2.mp4
+https://user-images.githubusercontent.com/6796129/131255754-0e0a9fc9-5d0a-47ff-96e1-039a2ef0905b.mp4
 
 [Full video](https://drive.google.com/file/d/1ggFP640MhuonqCG2DuTiYdgSRmmRD6NZ/view?usp=sharing)
